@@ -142,7 +142,7 @@ use arrayref::{array_mut_ref, array_ref};
 use arrayvec::{ArrayString, ArrayVec};
 use core::cmp;
 use core::fmt;
-use platform::{Platform, MAX_SIMD_DEGREE, MAX_SIMD_DEGREE_OR_2};
+use platform::{MAX_SIMD_DEGREE, MAX_SIMD_DEGREE_OR_2, Platform};
 #[cfg(feature = "zeroize")]
 use zeroize::Zeroize;
 
@@ -170,7 +170,7 @@ const MAX_DEPTH: usize = 54; // 2^54 * CHUNK_LEN = 2^64
 // While iterating the compression function within a chunk, the CV is
 // represented as words, to avoid doing two extra endianness conversions for
 // each compression in the portable implementation. But the hash_many interface
-// needs to hash both input bytes and parent nodes, so its better for its
+// needs to hash both input bytes and parent nodes, so it's better for its
 // output CVs to be represented as bytes.
 type CVWords = [u32; 8];
 type CVBytes = [u8; 32]; // little-endian
@@ -241,7 +241,7 @@ pub struct Hash([u8; OUT_LEN]);
 
 impl Hash {
     /// The raw bytes of the `Hash`. Note that byte arrays don't provide
-    /// constant-time equality checking, so if  you need to compare hashes,
+    /// constant-time equality checking, so if you need to compare hashes,
     /// prefer the `Hash` type.
     #[inline]
     pub const fn as_bytes(&self) -> &[u8; OUT_LEN] {
@@ -251,6 +251,14 @@ impl Hash {
     /// Create a `Hash` from its raw bytes representation.
     pub const fn from_bytes(bytes: [u8; OUT_LEN]) -> Self {
         Self(bytes)
+    }
+
+    /// The raw bytes of the `Hash`, as a slice. Useful for serialization. Note that byte arrays
+    /// don't provide constant-time equality checking, so if you need to compare hashes, prefer
+    /// the `Hash` type.
+    #[inline]
+    pub const fn as_slice(&self) -> &[u8] {
+        self.0.as_slice()
     }
 
     /// Create a `Hash` from its raw bytes representation as a slice.

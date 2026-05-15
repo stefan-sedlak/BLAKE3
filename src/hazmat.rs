@@ -150,7 +150,7 @@
 //! of the same input.
 
 use crate::platform::Platform;
-use crate::{CVWords, Hasher, CHUNK_LEN, IV, KEY_LEN, OUT_LEN};
+use crate::{CHUNK_LEN, CVWords, Hasher, IV, KEY_LEN, OUT_LEN};
 
 /// Extension methods for [`Hasher`]. This is the main entrypoint to the `hazmat` module.
 pub trait HasherExt {
@@ -335,9 +335,9 @@ fn test_max_subtree_len() {
 /// than `input_len`. This leads to a tree where all left subtrees are "complete" and at least as
 /// large as their sibling right subtrees, as specified in section 2.1 of [the BLAKE3
 /// paper](https://github.com/BLAKE3-team/BLAKE3-specs/blob/master/blake3.pdf). For example, if an
-/// input is exactly two chunks, its left and right subtrees both get one chunk. But if an input is
-/// two chunks plus one more byte, then its left subtree gets two chunks, and its right subtree
-/// only gets one byte.
+/// input is exactly two chunks, the left subtree gets the first chunk and the right subtree gets
+/// the second chunk. But if an input is two chunks plus one more byte, then its left subtree gets
+/// two chunks, and its right subtree only gets one byte.
 ///
 /// This function isn't meaningful for one chunk of input, because chunks don't have children. It
 /// currently panics in debug mode if `input_len <= CHUNK_LEN`.
@@ -397,15 +397,16 @@ fn test_left_subtree_len() {
 /// See the [module level examples](index.html#examples).
 #[derive(Copy, Clone, Debug)]
 pub enum Mode<'a> {
-    /// Corresponding to [`hash`](crate::hash)
+    /// The default [`hash`][crate::hash] mode. Subtrees must be hashed with [`Hasher::new`].
     Hash,
 
-    /// Corresponding to [`keyed_hash`](crate::hash)
+    /// The [`keyed_hash`][crate::keyed_hash] mode. Subtrees must be hashed with
+    /// [`Hasher::new_keyed`].
     KeyedHash(&'a [u8; KEY_LEN]),
 
-    /// Corresponding to [`derive_key`](crate::hash)
-    ///
-    /// The [`ContextKey`] comes from [`hash_derive_key_context`].
+    /// The [`derive_key`][crate::derive_key] mode. Subtrees must be hashed with either
+    /// [`Hasher::new_derive_key`] or [`Hasher::new_from_context_key`]. The [`ContextKey`] comes
+    /// from [`hash_derive_key_context`].
     DeriveKeyMaterial(&'a ContextKey),
 }
 

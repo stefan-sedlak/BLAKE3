@@ -1,12 +1,12 @@
 [package]
 name = "b3sum"
-version = "1.8.2"
+version = "1.8.5"
 authors = ["Jack O'Connor <oconnor663@gmail.com>"]
 description = "a command line implementation of the BLAKE3 hash function"
 repository = "https://github.com/BLAKE3-team/BLAKE3"
 license = "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception"
 readme = "README.md"
-edition = "2021"
+edition = "2024"
 
 [features]
 neon = ["blake3/neon"]
